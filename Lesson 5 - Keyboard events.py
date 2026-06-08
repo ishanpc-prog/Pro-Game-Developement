@@ -3,8 +3,8 @@ from pygame.locals import *
 import time
 
 pygame.init()
-WIDTH = 700
-HEIGHT = 700
+WIDTH = 600
+HEIGHT = 600
 
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 player_x = 200
@@ -24,22 +24,22 @@ while player_y < 490:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == K_UP:
-                keys[0] == True
+                keys[0] = True
             elif event.key == K_DOWN:
-                keys[1] == True
+                keys[1] = True
             elif event.key == K_LEFT:
-                keys[2] == True
+                keys[2] = True
             elif event.key == K_RIGHT:
-                keys[3] == True
+                keys[3] = True
         elif event.type == pygame.KEYUP:
             if event.key == K_UP:
-                keys[0] == False
+                keys[0] = False
             elif event.key == K_DOWN:
-                keys[1] == False
+                keys[1] = False
             elif event.key == K_LEFT:
-                keys[2] == False
+                keys[2] = False
             elif event.key == K_RIGHT:
-                keys[3] == False
+                keys[3] = False
     if keys[0]:
         if player_y > 0:
             player_y = player_y - 5
