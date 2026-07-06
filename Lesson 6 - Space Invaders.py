@@ -38,7 +38,7 @@ backround = pygame.transform.scale(bg,(WIDTH,HEIGHT))
 yellow_object = pygame.Rect(20,375,battle_ship_width,battle_ship_height) #Purpose: Storage of Position and Size
 red_object = pygame.Rect(680,375,battle_ship_width,battle_ship_height)   #Purpose: Storage of Position and Size
 
-def draw_window(red,yellow,red_bullets,yellow_bullets,red_health,yellow_health):
+def draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_ship_health):
     screen.blit(bg,(0,0))
     pygame.draw.rect(screen,black_color,border)
     red_healthbar = health_font.render("Health: " + str(red_ship_health),1,red_color)
@@ -53,4 +53,22 @@ def draw_window(red,yellow,red_bullets,yellow_bullets,red_health,yellow_health):
         pygame.draw.rect(screen,yellow_color,bullet)
     pygame.display.update()
 
-#Refer to your birthday animation to render the yellow and red health
+def red_movement(key_pressed,red):
+    if key_pressed[pygame.K_a] and red.x - laser_velo > 0:
+        red.x = red.x - laser_velo
+    elif key_pressed[pygame.K_d] and red.width + red.x + laser_velo < border.x:
+        red.x = red.x + laser_velo
+    elif key_pressed[pygame.K_w] and red.y - laser_velo > 0:
+        red.y = red.y - laser_velo
+    elif key_pressed[pygame.K_s] and red.height + red.y + laser_velo < 685:
+        red.y = red.y - laser_velo
+
+def yellow_movement(key_pressed,yellow):
+    if key_pressed[pygame.K_LEFT] and yellow.x - laser_velo > border.x + border.width:
+        yellow.x = yellow.x - laser_velo
+    elif key_pressed[pygame.K_RIGHT] and yellow.width + yellow.x + laser_velo < 685:
+        yellow.x = yellow.x + laser_velo
+    elif key_pressed[pygame.K_UP] and yellow.y - laser_velo > 0:
+        yellow.y = yellow.y - laser_velo
+    elif key_pressed[pygame.K_DOWN] and yellow.height + yellow.y + laser_velo < 685:
+        yellow.y = yellow.y + laser_velo
