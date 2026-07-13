@@ -31,12 +31,12 @@ winner = ""
 game_over = False
 game_over_font = pygame.font.SysFont("Times New Roman", 64)
 simple_font = pygame.font.SysFont("Times New Roman", 40)
-r_bullets = []
-y_bullets = []
 bg = pygame.image.load("images/space_bg_2.png")
 backround = pygame.transform.scale(bg,(WIDTH,HEIGHT))
 yellow_object = pygame.Rect(20,375,battle_ship_width,battle_ship_height) #Purpose: Storage of Position and Size
 red_object = pygame.Rect(680,375,battle_ship_width,battle_ship_height)   #Purpose: Storage of Position and Size
+yellow_hit = pygame.USEREVENT + 1
+red_hit = pygame.USEREVENT + 2
 
 def draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_ship_health):
     screen.blit(bg,(0,0))
@@ -72,3 +72,14 @@ def yellow_movement(key_pressed,yellow):
         yellow.y = yellow.y - laser_velo
     elif key_pressed[pygame.K_DOWN] and yellow.height + yellow.y + laser_velo < 685:
         yellow.y = yellow.y + laser_velo
+
+def handle_bullets(yellow_bullets,red_bullets,yellow,red):
+    for bullet in yellow_bullets:
+        bullet.x = bullet.x - laser_velo
+        if red.colliderect(bullet):
+            pygame.event.post(pygame.event.Event(red_hit))
+            yellow_bullets.remove(bullet)
+        elif bullet.x < 0:
+            yellow_bullets.remove(bullet)
+    for bullet in red_bullets:
+        bullet     
