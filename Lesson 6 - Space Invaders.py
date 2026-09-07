@@ -1,7 +1,7 @@
 import pygame
 
 pygame.init()
-WIDTH = 700
+WIDTH = 900
 HEIGHT = 700
 pygame.display.set_caption("SPACE INVADERS")
 
@@ -10,7 +10,7 @@ red_color = (255,0,0)
 yellow_color = (0,255,255)
 black_color = (0,0,0)
 pygame.font.init()
-border = pygame.Rect(345,0,10,700)
+border = pygame.Rect(445,0,10,700)
 health_font = pygame.font.SysFont("Times New Roman", 64)
 winner_font = pygame.font.SysFont("Times New Roman", 100)
 fps = 60
@@ -25,7 +25,6 @@ red_ship = pygame.transform.rotate(red_ship_scale,90) # yellow will 270 degrees 
 yellow_ship_image = pygame.image.load("images/yellow_battle_ship.png")
 yellow_ship_scale = pygame.transform.scale(yellow_ship_image,(battle_ship_width,battle_ship_height))
 yellow_ship = pygame.transform.rotate(yellow_ship_scale,270) #red ship left and yellow ship right
-winner = ""
 game_over = False
 game_over_font = pygame.font.SysFont("Times New Roman", 64)
 simple_font = pygame.font.SysFont("Times New Roman", 40)
@@ -49,25 +48,25 @@ def draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_shi
         pygame.draw.rect(screen,yellow_color,bullet)
     pygame.display.update()
 
-def red_movement(key_pressed,red):
-    if key_pressed[pygame.K_LEFT] and red.x - laser_velo > 0:
-        red.x = red.x - laser_velo
-    elif key_pressed[pygame.K_RIGHT] and red.width + red.x + laser_velo < border.x:
-        red.x = red.x + laser_velo
-    elif key_pressed[pygame.K_UP] and red.y - laser_velo > 0:
-        red.y = red.y - laser_velo
-    elif key_pressed[pygame.K_DOWN] and red.height + red.y + laser_velo < 685:
-        red.y = red.y - laser_velo
-
 def yellow_movement(key_pressed,yellow):
-    if key_pressed[pygame.K_a] and yellow.x - laser_velo > border.x + border.width:
+    if key_pressed[pygame.K_LEFT] and yellow.x - laser_velo > 0:
         yellow.x = yellow.x - laser_velo
-    elif key_pressed[pygame.K_d] and yellow.width + yellow.x + laser_velo < 685:
+    elif key_pressed[pygame.K_RIGHT] and yellow.width + yellow.x + laser_velo < border.x:
         yellow.x = yellow.x + laser_velo
-    elif key_pressed[pygame.K_w] and yellow.y - laser_velo > 0:
+    elif key_pressed[pygame.K_UP] and yellow.y - laser_velo > 0:
         yellow.y = yellow.y - laser_velo
-    elif key_pressed[pygame.K_s] and yellow.height + yellow.y + laser_velo < 685:
-        yellow.y = yellow.y + laser_velo
+    elif key_pressed[pygame.K_DOWN] and yellow.height + yellow.y + laser_velo < 685:
+        yellow.y = yellow.y - laser_velo
+
+def red_movement(key_pressed,red):
+    if key_pressed[pygame.K_a] and red.x - laser_velo > border.x + border.width:
+        red.x = red.x - laser_velo
+    elif key_pressed[pygame.K_d] and red.width + red.x + laser_velo < 685:
+        red.x = red.x + laser_velo
+    elif key_pressed[pygame.K_w] and red.y - laser_velo > 0:
+        red.y = red.y - laser_velo
+    elif key_pressed[pygame.K_s] and red.height + red.y + laser_velo < 685:
+        red.y = red.y + laser_velo
 
 def handle_bullets(yellow_bullets,red_bullets,yellow,red):
     for bullet in yellow_bullets:
@@ -83,11 +82,15 @@ def handle_bullets(yellow_bullets,red_bullets,yellow,red):
             pygame.event.post(pygame.event.Event(red_hit))
             red_bullets.remove(bullet)
         elif bullet.x > 700:
-            red_bullets.remove(bullet)     
+            red_bullets.remove(bullet)
+
+def victory(winner_text):
+    text_1 = (str(winner_text),True,(255,255,255))
+    screen.blit(text_1,(250,250))
 
 def main():
-    red = pygame.Rect(680,375,battle_ship_width,battle_ship_height)
-    yellow = pygame.Rect(20,375,battle_ship_width,battle_ship_height)
+    red = pygame.Rect(20,375,battle_ship_width,battle_ship_height)
+    yellow = pygame.Rect(680,375,battle_ship_width,battle_ship_height)
     red_bullets = []
     yellow_bullets = []
     red_ship_health = 20
@@ -115,6 +118,16 @@ def main():
         if yellow_ship_health <= 0:
             winner_text = "The red ship has won this match!"
         elif red_ship_health <= 0:
-            winner_text = "The yellow ship has won this match"
+            winner_text = "The yellow ship has won this match!"
         elif winner_text != "":
             victory(winner_text) # defined Name is victory
+            break
+        key_pressed = pygame.key.get_pressed()
+        yellow_movement(key_pressed,yellow)
+        red_movement(key_pressed,red)
+        handle_bullets(yellow_bullets,red_bullets,yellow,red)
+        draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_ship_health)
+    main()   
+ 
+if __name__ == "__main__":
+    main()
