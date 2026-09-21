@@ -1,4 +1,5 @@
 import pygame
+import time
 
 pygame.init()
 WIDTH = 900
@@ -12,10 +13,10 @@ black_color = (0,0,0)
 pygame.font.init()
 border = pygame.Rect(445,0,10,700)
 health_font = pygame.font.SysFont("Times New Roman", 64)
-winner_font = pygame.font.SysFont("Times New Roman", 100)
+winner_font = pygame.font.SysFont("Times New Roman", 58)
 fps = 60
 laser_velo = 8 # velo for velocity
-max_lasershots = 3
+max_lasershots = 3 
 battle_ship_velo = 5
 battle_ship_width = 55
 battle_ship_height = 40
@@ -85,8 +86,11 @@ def handle_bullets(yellow_bullets,red_bullets,yellow,red):
             red_bullets.remove(bullet)
 
 def victory(winner_text):
+    screen.fill((0,0,0))
     text_1 = winner_font.render(str(winner_text),True,(255,255,255))
-    screen.blit(text_1,(250,250))
+    screen.blit(text_1,(20,250))
+    pygame.display.update()
+    time.sleep(4)
 
 def main():
     red = pygame.Rect(20,375,battle_ship_width,battle_ship_height)
@@ -97,18 +101,23 @@ def main():
     yellow_ship_health = 20
     clock = pygame.time.Clock()
     running = True
+    cooldown_time = 500
+    last_red_shot = 0
+    last_yellow_shot = 0
     while running:
         clock.tick(fps)
+        current_time = pygame.time.get_ticks()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q and len(red_bullets) < max_lasershots:
-                    bullet = pygame.Rect(yellow.x + yellow.width ,  yellow.y + yellow.height // 2-2,10,5)
-                    yellow_bullets.append(bullet)
-                elif event.key == pygame.K_m and len(yellow_bullets) < max_lasershots:
-                    bullet = pygame.Rect(red.x , yellow.y + yellow.height // 2-2,10,5)
+                if event.key == pygame.K_m and len(red_bullets) < max_lasershots:
+                    
+                        bullet = pygame.Rect(yellow.x + yellow.width ,  yellow.y + yellow.height // 2-2,10,5)
+                        yellow_bullets.append(bullet)
+                elif event.key == pygame.K_q and len(yellow_bullets) < max_lasershots:
+                    bullet = pygame.Rect(red.x , red.y + red.height // 2-2,10,5)
                     red_bullets.append(bullet)
             elif event.type == yellow_hit:
                 if yellow_ship_health > 0:
@@ -121,15 +130,15 @@ def main():
             winner_text = "The red ship has won this match!"
         elif red_ship_health <= 0:
             winner_text = "The yellow ship has won this match!"
-        elif winner_text != "":
+        if winner_text != "":
             victory(winner_text) # defined Name is victory
+            pygame.display.update()
             break
         key_pressed = pygame.key.get_pressed()
         yellow_movement(key_pressed,yellow)
         red_movement(key_pressed,red)
         handle_bullets(yellow_bullets,red_bullets,yellow,red)
-        draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_ship_health)
-    main()   
+        draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_ship_health)   
  
 if __name__ == "__main__":
     main()
