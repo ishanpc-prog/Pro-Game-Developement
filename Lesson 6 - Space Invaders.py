@@ -7,7 +7,7 @@ pygame.display.set_caption("SPACE INVADERS")
 
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 red_color = (255,0,0)
-yellow_color = (0,255,255)
+yellow_color = (255,255,0)
 black_color = (0,0,0)
 pygame.font.init()
 border = pygame.Rect(445,0,10,700)
@@ -48,25 +48,25 @@ def draw_window(red,yellow,red_bullets,yellow_bullets,red_ship_health,yellow_shi
         pygame.draw.rect(screen,yellow_color,bullet)
     pygame.display.update()
 
-def yellow_movement(key_pressed,yellow):
-    if key_pressed[pygame.K_LEFT] and yellow.x - laser_velo > 0:
-        yellow.x = yellow.x - laser_velo
-    elif key_pressed[pygame.K_RIGHT] and yellow.width + yellow.x + laser_velo < border.x:
-        yellow.x = yellow.x + laser_velo
-    elif key_pressed[pygame.K_UP] and yellow.y - laser_velo > 0:
-        yellow.y = yellow.y - laser_velo
-    elif key_pressed[pygame.K_DOWN] and yellow.height + yellow.y + laser_velo < 685:
-        yellow.y = yellow.y - laser_velo
+def yellow_movement(key_pressed,yellow): # the one on the right
+    if key_pressed[pygame.K_LEFT] and yellow.x - battle_ship_velo > border.x + border.width:
+        yellow.x = yellow.x - battle_ship_velo
+    elif key_pressed[pygame.K_RIGHT] and yellow.width + yellow.x + battle_ship_velo < WIDTH:
+        yellow.x = yellow.x + battle_ship_velo
+    elif key_pressed[pygame.K_UP] and yellow.y - battle_ship_velo > 0:
+        yellow.y = yellow.y - battle_ship_velo
+    elif key_pressed[pygame.K_DOWN] and yellow.height + yellow.y + battle_ship_velo < 685:
+        yellow.y = yellow.y + battle_ship_velo
 
-def red_movement(key_pressed,red):
-    if key_pressed[pygame.K_a] and red.x - laser_velo > border.x + border.width:
-        red.x = red.x - laser_velo
-    elif key_pressed[pygame.K_d] and red.width + red.x + laser_velo < 685:
-        red.x = red.x + laser_velo
-    elif key_pressed[pygame.K_w] and red.y - laser_velo > 0:
-        red.y = red.y - laser_velo
-    elif key_pressed[pygame.K_s] and red.height + red.y + laser_velo < 685:
-        red.y = red.y + laser_velo
+def red_movement(key_pressed,red): #the one on the left
+    if key_pressed[pygame.K_a] and red.x - battle_ship_velo > 0:
+        red.x = red.x - battle_ship_velo
+    elif key_pressed[pygame.K_d] and red.width + red.x + battle_ship_velo < border.x:
+        red.x = red.x + battle_ship_velo
+    elif key_pressed[pygame.K_w] and red.y - battle_ship_velo > 0:
+        red.y = red.y - battle_ship_velo
+    elif key_pressed[pygame.K_s] and red.height + red.y + battle_ship_velo < 685:
+        red.y = red.y + battle_ship_velo
 
 def handle_bullets(yellow_bullets,red_bullets,yellow,red):
     for bullet in yellow_bullets:
@@ -79,18 +79,18 @@ def handle_bullets(yellow_bullets,red_bullets,yellow,red):
     for bullet in red_bullets:
         bullet.x = bullet.x + laser_velo
         if yellow.colliderect(bullet):
-            pygame.event.post(pygame.event.Event(red_hit))
+            pygame.event.post(pygame.event.Event(yellow_hit))
             red_bullets.remove(bullet)
-        elif bullet.x > 700:
+        elif bullet.x > 900:
             red_bullets.remove(bullet)
 
 def victory(winner_text):
-    text_1 = (str(winner_text),True,(255,255,255))
+    text_1 = winner_font.render(str(winner_text),True,(255,255,255))
     screen.blit(text_1,(250,250))
 
 def main():
     red = pygame.Rect(20,375,battle_ship_width,battle_ship_height)
-    yellow = pygame.Rect(680,375,battle_ship_width,battle_ship_height)
+    yellow = pygame.Rect(825,375,battle_ship_width,battle_ship_height)
     red_bullets = []
     yellow_bullets = []
     red_ship_health = 20
@@ -104,16 +104,18 @@ def main():
                 running = False
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q and len(yellow_bullets) < max_lasershots:
+                if event.key == pygame.K_q and len(red_bullets) < max_lasershots:
                     bullet = pygame.Rect(yellow.x + yellow.width ,  yellow.y + yellow.height // 2-2,10,5)
                     yellow_bullets.append(bullet)
-                elif event.key == pygame.K_m and len(red_bullets) < max_lasershots:
+                elif event.key == pygame.K_m and len(yellow_bullets) < max_lasershots:
                     bullet = pygame.Rect(red.x , yellow.y + yellow.height // 2-2,10,5)
                     red_bullets.append(bullet)
             elif event.type == yellow_hit:
-                yellow_ship_health = yellow_ship_health - 1
+                if yellow_ship_health > 0:
+                    yellow_ship_health = yellow_ship_health - 1
             elif event.type == red_hit:
-                red_ship_health = red_ship_health - 1
+                if red_ship_health > 0:
+                    red_ship_health = red_ship_health - 1
         winner_text = ""
         if yellow_ship_health <= 0:
             winner_text = "The red ship has won this match!"
